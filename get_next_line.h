@@ -6,13 +6,26 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 18:34:36 by samamaev          #+#    #+#             */
-/*   Updated: 2025/08/30 19:07:06 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/03 21:09:42 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE
 # define GET_NEXT_LINE
 
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 42
+#endif
+
 # include <unistd.h>
+# include <stdlib.h>
+
+typedef struct s_list
+{
+	int				fd;
+	char			*buffer;
+	struct s_list	*next;
+}	t_list;
+char	*get_next_line(int fd);
 
 #endif
