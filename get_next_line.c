@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 18:33:36 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/05 22:23:28 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/07 19:42:02 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ char	*get_next_line(int fd)
 	node = find_or_create_node(&head, fd);
 	if (!node)
 		return (NULL);
+
 }
