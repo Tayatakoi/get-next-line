@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 18:33:36 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/07 19:42:02 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:10:22 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,5 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	*head;
-	t_list			*node;
-	char			*line;
-
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-    	return (NULL);
-	node = find_or_create_node(&head, fd);
-	if (!node)
-		return (NULL);
-
+	
 }
