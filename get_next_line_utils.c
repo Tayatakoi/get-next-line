@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 19:07:40 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/18 23:29:59 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/19 21:51:50 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ t_list	*creates_a_new_node(char *content)
     t_list *new_node;
 
     new_node = malloc(sizeof(t_list));
-    new_node->content = content;
+    new_node->content = ft_strdup(content);
     new_node->next = NULL;
     return (new_node);
 }
@@ -57,28 +57,43 @@ t_list	*adds_a_node_to_the_end(t_list *list, t_list *new_node)
     }
     return (list);
 }
-t_newline_pos find_newline_in_list(t_list *list)
+t_list *find_newline_in_list(t_list *list, int *position)
 {
-	t_list	*temp;
-	int	i;
+    t_list *temp = list;
+    int i;
 
-	i = 0;
-	temp = list;
-	while (temp != NULL)
+    while (temp != NULL)
+    {
+        i = 0;
+        while (temp->content[i])
+        {
+            if (temp->content[i] == '\n')
+            {
+                *position = i;
+                return (temp);
+            }
+            i++;
+        }
+        temp = temp->next;
+    }
+    *position = -1;
+    return (NULL);
+}
+char *extract_line_from_list(t_list *list, t_list *newline_node, int position)
+{
+	int total_length; // i need to count the legth till i find the node that has '\n' inside its content
+	t_list *current;
+
+	total_length = 0; //how do i count the legth?
+	current = list;
+	while (current != newline_node)
 	{
-		//we need to search for /n inside the node but how - idk, maybe we need to use strchr
-		//by cheacking the content of the node
-		while (temp->content[i])
-		{
-			i = 0;
-			if (temp->content[i] == '\n')
-			{
-				t_newline_pos result; //what we are returning???
-				result.node = temp;
-				result.position = i;
-				return (result);
-			}
-			i++;
-		}
+		int node_length;
+		
+		node_length = 0;
+		while(current->content[node_length])
+			node_length++;
+		current = current->next;
 	}
 }
+
