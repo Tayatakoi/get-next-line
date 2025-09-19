@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 18:34:36 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/18 22:07:55 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/19 21:03:12 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,4 @@ typedef struct s_list
 	struct t_list	*next;
 } t_list;
 
- typedef struct s_newline_pos
- {
-    struct t_list	*node;
-    int				position;
- } t_newline_pos;
 #endif
