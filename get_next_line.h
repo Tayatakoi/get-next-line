@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 18:34:36 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/19 21:03:12 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/22 21:29:45 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,6 @@ typedef struct s_list
 {
     char*			content;
 	struct t_list	*next;
-} t_list;
+} t_list; 
 
 #endif
