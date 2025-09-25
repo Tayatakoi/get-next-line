@@ -6,7 +6,7 @@
 /*   By: samamaev <samamaev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 19:07:40 by samamaev          #+#    #+#             */
-/*   Updated: 2025/09/21 21:49:51 by samamaev         ###   ########.fr       */
+/*   Updated: 2025/09/25 22:35:48 by samamaev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_list *create_and_add_node(t_list *list, char *content)
 
     new_node = malloc(sizeof(t_list));
     if (!new_node)
-        return (list);  // Return original list if malloc fails
+        return (list);
     new_node->content = ft_strdup(content);
     if (!new_node->content)
     {
@@ -57,7 +57,7 @@ t_list *create_and_add_node(t_list *list, char *content)
 }
 t_list *find_newline_in_list(t_list *list, int *position)
 {
-    t_list *temp = list;//so, we can manipulate the list without changing it
+    t_list *temp = list;
     int i;
 
     while (temp != NULL)
@@ -65,7 +65,7 @@ t_list *find_newline_in_list(t_list *list, int *position)
         i = 0;
         while (temp->content[i])
         {
-            if (temp->content[i] == '\n') // cool, right?
+            if (temp->content[i] == '\n')
             {
                 *position = i;
                 return (temp);
@@ -77,18 +77,20 @@ t_list *find_newline_in_list(t_list *list, int *position)
     *position = -1;
     return (NULL);
 }
-char *extract_line_from_list(t_list *list, t_list *newline_node, int position)
+char *extract_line(t_list *list, t_list *newline_node, int position)
 {
-	int total_length; // i need to count the legth till i find the node that has '\n' inside its content
+	int total_length;
 	t_list *current;
     char *m;
     int node_length;
     int i;
     int j;
 
-	total_length = 0; //how do i count the legth?
+	total_length = 0;
 	current = list;
-	while (current != newline_node)
+    if (newline_node == NULL)
+        return (NULL);
+	while (current != NULL && current!= newline_node)
 	{
 		node_length = 0;
 		while(current->content[node_length])
@@ -96,15 +98,15 @@ char *extract_line_from_list(t_list *list, t_list *newline_node, int position)
         total_length += node_length;
 		current = current->next;
 	}
-    total_length += position + 1; //so, this is for the node that actually has '\n' inside the content
-    m = malloc(sizeof(char)* total_length + 1); //dont forget to enclude '\n'
+    total_length += position + 1;
+    m = malloc(sizeof(char)* total_length + 1);
     if (!m)
         return (NULL);
     node_length = 0;
     current = list;
     i = 0;
     j = 0;
-    while (current != newline_node)
+    while (current != NULL && current != newline_node)
     {
         while (current->content[node_length])
             m[i++] = current->content[node_length++];
@@ -117,10 +119,41 @@ char *extract_line_from_list(t_list *list, t_list *newline_node, int position)
     m[i] = '\0';
     return (m);
 }
-t_list *cleanup_list_after_extraction(t_list *list, t_list *newline_node, int position)
+t_list *cleanup_list(t_list *list, t_list *newline_node, int position)
 {
+    t_list  *temp;
     char *leftover;
+    char *temp_holder;
 
-    
-    
+    leftover = &(newline_node->content[position + 1]);
+    temp_holder = ft_strdup(leftover);
+    while (list != newline_node)
+    {
+        temp = list;
+        list = list->next;
+        free(temp->content);
+        free(temp); 
+    }
+    free(newline_node->content);
+    newline_node->content = temp_holder;
+    return (newline_node);
+}
+int read_and_build_list(int fd, t_list **list)
+{
+    char buffer[BUFFER_SIZE + 1];
+    int byte_read;
+    int position;
+
+    position = 0;
+    while (find_newline_in_list(*list, &position) == NULL)
+    {
+            byte_read = read(fd, buffer, BUFFER_SIZE);
+        if (byte_read < 0)
+            return (-1);
+        if (byte_read == 0)
+            return (0);
+        buffer[byte_read] = '\0';
+        *list = create_and_add_node(*list, buffer);
+    }
+    return (1);
 }
