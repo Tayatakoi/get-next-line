@@ -12,148 +12,93 @@
 
 #include "get_next_line.h"
 
-char	*ft_strdup(char *str)
+t_list	*find_last_node(t_list *list)
 {
-	int	lenght_of_string;
-	char *s;
-	
-	lenght_of_string = 0;
-	while (str[lenght_of_string])
-		lenght_of_string++;
-	s = malloc(sizeof(char)* lenght_of_string + 1);
-	if (!s)
+	if (!list)
 		return (NULL);
-	lenght_of_string = 0;
-	while (str[lenght_of_string])
+	while (list->next)
+		list = list->next;
+	return (list);
+}
+
+int	found_newline(t_list *list)
+{
+	int	i;
+
+	if (!list)
+		return (0);
+	while (list)
 	{
-		s[lenght_of_string] = str[lenght_of_string];
-		lenght_of_string++;
+		i = 0;
+		while (list->content[i])
+		{
+			if (list->content[i] == '\n')
+				return (1);
+			i++;
+		}
+		list = list->next;
 	}
-	s[lenght_of_string] = '\0';
-	return (s);
+	return (0);
 }
-t_list *create_and_add_node(t_list *list, char *content)
-{
-    t_list *new_node;
-    t_list *temp;
 
-    new_node = malloc(sizeof(t_list));
-    if (!new_node)
-        return (list);
-    new_node->content = ft_strdup(content);
-    if (!new_node->content)
-    {
-        free(new_node);
-        return (list);
-    }
-    new_node->next = NULL;
-    if (list == NULL)
-        return (new_node);
-    temp = list;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = new_node;
-    return (list);
-}
-t_list *find_newline_in_list(t_list *list, int *position)
+void	copy_content_to_line(char *next_str, t_list *list, int *k)
 {
-    t_list *temp = list;
-    int i;
+	int	i;
 
-    while (temp != NULL)
-    {
-        i = 0;
-        while (temp->content[i])
-        {
-            if (temp->content[i] == '\n')
-            {
-                *position = i;
-                return (temp);
-            }
-            i++;
-        }
-        temp = temp->next;
-    }
-    *position = -1;
-    return (NULL);
-}
-char *extract_line(t_list *list, t_list *newline_node, int position)
-{
-	int total_length;
-	t_list *current;
-    char *m;
-    int node_length;
-    int i;
-    int j;
-
-	total_length = 0;
-	current = list;
-    if (newline_node == NULL)
-        return (NULL);
-	while (current != NULL && current!= newline_node)
+	i = 0;
+	while (list->content[i])
 	{
-		node_length = 0;
-		while(current->content[node_length])
-			node_length++;
-        total_length += node_length;
-		current = current->next;
+		if (list->content[i] == '\n')
+		{
+			next_str[(*k)++] = '\n';
+			return ;
+		}
+		next_str[(*k)++] = list->content[i++];
 	}
-    total_length += position + 1;
-    m = malloc(sizeof(char)* total_length + 1);
-    if (!m)
-        return (NULL);
-    node_length = 0;
-    current = list;
-    i = 0;
-    j = 0;
-    while (current != NULL && current != newline_node)
-    {
-        while (current->content[node_length])
-            m[i++] = current->content[node_length++];
-        current = current->next;
-        node_length = 0;
-    }
-    j = 0;
-    while (j <= position)
-        m[i++] = current->content[j++];
-    m[i] = '\0';
-    return (m);
 }
-t_list *cleanup_list(t_list *list, t_list *newline_node, int position)
-{
-    t_list  *temp;
-    char *leftover;
-    char *temp_holder;
 
-    leftover = &(newline_node->content[position + 1]);
-    temp_holder = ft_strdup(leftover);
-    while (list != newline_node)
-    {
-        temp = list;
-        list = list->next;
-        free(temp->content);
-        free(temp); 
-    }
-    free(newline_node->content);
-    newline_node->content = temp_holder;
-    return (newline_node);
+int	len_to_newline(t_list *list)
+{
+	int	i;
+	int	len;
+
+	if (!list)
+		return (0);
+	len = 0;
+	while (list)
+	{
+		i = 0;
+		while (list->content[i])
+		{
+			if (list->content[i] == '\n')
+				return (len + 1);
+			i++;
+			len++;
+		}
+		list = list->next;
+	}
+	return (len);
 }
-int read_and_build_list(int fd, t_list **list)
-{
-    char buffer[BUFFER_SIZE + 1];
-    int byte_read;
-    int position;
 
-    position = 0;
-    while (find_newline_in_list(*list, &position) == NULL)
-    {
-            byte_read = read(fd, buffer, BUFFER_SIZE);
-        if (byte_read < 0)
-            return (-1);
-        if (byte_read == 0)
-            return (0);
-        buffer[byte_read] = '\0';
-        *list = create_and_add_node(*list, buffer);
-    }
-    return (1);
+void	chistka(t_list **list, t_list *clean_node, char *buf)
+{
+	t_list	*tmp;
+
+	if (!*list)
+		return ;
+	while (*list)
+	{
+		tmp = (*list)->next;
+		free((*list)->content);
+		free(*list);
+		*list = tmp;
+	}
+	*list = NULL;
+	if (clean_node->content[0])
+		*list = clean_node;
+	else
+	{
+		free(buf);
+		free(clean_node);
+	}
 }
