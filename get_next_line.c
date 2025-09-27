@@ -12,34 +12,111 @@
 
 #include "get_next_line.h"
 
-static char	*extract_clean(t_list **stored, t_list *newline_node, int position)
+void	polish_list(t_list **list)
 {
-	char	*line;
+	t_list	*last_node;
+	t_list	*clean_node;
+	int		i;
+	int		k;
+	char	*buf;
 
-	line = extract_line(*stored, newline_node, position);
-	*stored = cleanup_list(*stored, newline_node, position);
-	return (line);
+	buf = malloc(BUFFER_SIZE + 1);
+	clean_node = malloc(sizeof(t_list));
+	if (!buf || !clean_node)
+		return ;
+	last_node = find_last_node(*list);
+	i = 0;
+	k = 0;
+	while (last_node->content[i] && last_node->content[i] != '\n')
+		i++;
+	while (last_node->content[i] && last_node->content[++i])
+		buf[k++] = last_node->content[i];
+	buf[k] = '\0';
+	clean_node->content = buf;
+	clean_node->next = NULL;
+	chistka(list, clean_node, buf);
+}
+
+void	create_list(t_list **list, int fd)
+{
+	int		char_read;
+	char	*buf;
+
+	while (!found_newline(*list))
+	{
+		buf = malloc(BUFFER_SIZE + 1);
+		if (!buf)
+			return ;
+		char_read = read(fd, buf, BUFFER_SIZE);
+		if (char_read <= 0)
+		{
+			free(buf);
+			return ;
+		}
+		buf[char_read] = '\0';
+		append_node(list, buf);
+	}
+}
+
+char	*extract_line(t_list *list)
+{
+	int		str_len;
+	char	*next_str;
+	int		k;
+
+	if (!list)
+		return (NULL);
+	str_len = len_to_newline(list);
+	next_str = malloc(str_len + 1);
+	if (!next_str)
+		return (NULL);
+	k = 0;
+	while (list)
+	{
+		copy_content_to_line(next_str, list, &k);
+		if (k > 0 && next_str[k - 1] == '\n')
+		{
+			next_str[k] = '\0';
+			return (next_str);
+		}
+		list = list->next;
+	}
+	next_str[k] = '\0';
+	return (next_str);
+}
+
+void	append_node(t_list **list, char *buffer)
+{
+	t_list	*new_node;
+	t_list	*last_node;
+
+	new_node = malloc(sizeof(t_list));
+	if (!new_node)
+		return ;
+	new_node->content = buffer;
+	new_node->next = NULL;
+	if (*list == NULL)
+		*list = new_node;
+	else
+	{
+		last_node = find_last_node(*list);
+		last_node->next = new_node;
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	static t_list	*stored = NULL;
-	t_list			*newline_node;
-	int				read_result;
-	int				position;
+	static t_list	*list = NULL;
+	char			*next_line;
 
-	if (fd < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	newline_node = find_newline_in_list(stored, &position);
-	if (newline_node)
-		return (extract_clean(&stored, newline_node, position));
-	read_result = read_and_build_list(fd, &stored);
-	if (read_result <= 0)
+	create_list(&list, fd);
+	if (!list)
 		return (NULL);
-	newline_node = find_newline_in_list(stored, &position);
-	if (newline_node)
-		return (extract_clean(&stored, newline_node, position));
-	return (NULL);
+	next_line = extract_line(list);
+	polish_list(&list);
+	return (next_line);
 }
 // #include <unistd.h>
 // #include <fcntl.h>
