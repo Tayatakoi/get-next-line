@@ -18,17 +18,20 @@
 # include <fcntl.h>
 # include <stdio.h>
 
-# define BUFFER_SIZE 
-
 typedef struct s_list
 {
 	char			*content;
 	struct s_list	*next;
 }	t_list;
-t_list	*create_and_add_node(t_list *list, char *content);
-t_list	*find_newline_in_list(t_list *list, int *position);
-t_list	*cleanup_list(t_list *list, t_list *newline_node, int position);
-char	*extract_line(t_list *list, t_list *newline_node, int position);
-int		read_and_build_list(int fd, t_list **list);
+void	append_node(t_list **list, char *buffer);
+t_list	*find_last_node(t_list *list);
+int		found_newline(t_list *list);
+char	*extract_line(t_list *list);
+int		len_to_newline(t_list *list);
+void	chistka(t_list **list, t_list *clean_node, char *buf);
+void	copy_content_to_line(char *next_str, t_list *list, int *k);
+void	create_list(t_list **list, int fd);
+void	polish_list(t_list **list);
+char	*get_next_line(int fd);
 
 #endif
