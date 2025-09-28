@@ -37,7 +37,7 @@ void	polish_list(t_list **list)
 	chistka(list, clean_node, buf);
 }
 
-void	create_list(t_list **list, int fd)
+int	create_list(t_list **list, int fd)
 {
 	int		char_read;
 	char	*buf;
@@ -46,16 +46,22 @@ void	create_list(t_list **list, int fd)
 	{
 		buf = malloc(BUFFER_SIZE + 1);
 		if (!buf)
-			return ;
+			return (0);
 		char_read = read(fd, buf, BUFFER_SIZE);
-		if (char_read <= 0)
+		if (char_read < 0)
 		{
 			free(buf);
-			return ;
+			return (-1);
+		}
+		if (char_read == 0)
+		{
+			free(buf);
+			return (0);
 		}
 		buf[char_read] = '\0';
 		append_node(list, buf);
 	}
+	return (1);
 }
 
 char	*extract_line(t_list *list)
@@ -108,10 +114,16 @@ char	*get_next_line(int fd)
 {
 	static t_list	*list = NULL;
 	char			*next_line;
+	int				result;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	create_list(&list, fd);
+	result = create_list(&list, fd);
+	if (result == -1)
+	{
+		chistka(&list, NULL, NULL);
+		return (NULL);
+	}
 	if (!list)
 		return (NULL);
 	next_line = extract_line(list);
@@ -134,3 +146,4 @@ char	*get_next_line(int fd)
 // 	}
 // 	return (0);
 // }
+
