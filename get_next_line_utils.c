@@ -94,7 +94,7 @@ void	chistka(t_list **list, t_list *clean_node, char *buf)
 		*list = tmp;
 	}
 	*list = NULL;
-	if (clean_node->content[0])
+	if (clean_node && clean_node->content[0])
 		*list = clean_node;
 	else
 	{
