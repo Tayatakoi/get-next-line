@@ -30,7 +30,7 @@ char	*extract_line(t_list *list);
 int		len_to_newline(t_list *list);
 void	chistka(t_list **list, t_list *clean_node, char *buf);
 void	copy_content_to_line(char *next_str, t_list *list, int *k);
-void	create_list(t_list **list, int fd);
+int		create_list(t_list **list, int fd);
 void	polish_list(t_list **list);
 char	*get_next_line(int fd);
 
